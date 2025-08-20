@@ -2,7 +2,8 @@ package org.ecommerce.project.controller;
 
 import org.ecommerce.project.security.jwt.JwtUtils;
 import org.ecommerce.project.security.request.LoginRequest;
-import org.ecommerce.project.security.response.LoginResponse;
+import org.ecommerce.project.security.response.UserInfoResponse;
+import org.ecommerce.project.security.services.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,8 +11,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,11 +49,14 @@ public class AuthController {
             return new ResponseEntity<Object>(map, HttpStatus.NOT_FOUND);
         }
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        UserDetails userDetails=(UserDetails) authentication.getPrincipal();
+        UserDetailsImpl userDetails= (UserDetailsImpl) authentication.getPrincipal();
         String JwtToken=jwtUtils.generateTokenFromUsername(userDetails);
-        List<String> roles=userDetails.getAuthorities().stream().map(item->item.getAuthority()).collect(Collectors.toList());
-        LoginResponse loginResponse=new LoginResponse(JwtToken,userDetails.getUsername(),roles);
-        return new ResponseEntity<Object>(loginResponse,HttpStatus.OK);
+        List<String> roles=userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
+        UserInfoResponse userInfoResponse =new UserInfoResponse(userDetails.getId(),
+                JwtToken,
+                userDetails.getUsername(),
+                roles);
+        return new ResponseEntity<Object>(userInfoResponse,HttpStatus.OK);
     }
 
 
