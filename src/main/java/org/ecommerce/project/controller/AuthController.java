@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.ecommerce.project.model.AppRole;
 import org.ecommerce.project.model.Role;
 import org.ecommerce.project.model.User;
+import org.ecommerce.project.repository.RoleRepository;
 import org.ecommerce.project.repository.UserRepository;
 import org.ecommerce.project.security.jwt.JwtUtils;
 import org.ecommerce.project.security.request.LoginRequest;
@@ -88,22 +89,33 @@ public class AuthController {
         Set<String> strRoles=signupRequest.getRoles();
         Set<Role> roles=new HashSet<>();
         if (strRoles==null){
-            Role userRole=roleRepository.findBYRoleName(AppRole.ROLE_USER)
+            Role userRole=roleRepository.findByRoleName(AppRole.ROLE_USER)
                     .orElseThrow(()->new RuntimeException("Error: Role is not found"));
             roles.add(userRole);
         }else {
             strRoles.forEach(role->{
                 switch (role){
-                    case "admin":
+                        case "admin":
+                            Role adminRole=roleRepository.findByRoleName(AppRole.ROLE_ADMIN)
+                                    .orElseThrow(()->new RuntimeException("Error: Role is not found"));
+                            roles.add(adminRole);
                         break;
                         case "seller":
-                        break;
-                        case "admin":
+                            Role sellerRole=roleRepository.findByRoleName(AppRole.ROLE_SELLER)
+                                    .orElseThrow(()->new RuntimeException("Error: Role is not found"));
+                            roles.add(sellerRole);
                         break;
 
+                    default:
+                        Role userRole=roleRepository.findByRoleName(AppRole.ROLE_USER)
+                                .orElseThrow(()->new RuntimeException("Error: Role is not found"));
+                        roles.add(userRole);
                 }
             });
         }
+        user.setRoles(roles);
+        userRepository.save(user);
+        return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }
 
 
