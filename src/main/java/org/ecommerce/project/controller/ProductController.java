@@ -2,7 +2,6 @@ package org.ecommerce.project.controller;
 
 import jakarta.validation.Valid;
 import org.ecommerce.project.config.AppConstants;
-import org.ecommerce.project.model.Product;
 import org.ecommerce.project.payload.ProductDTO;
 import org.ecommerce.project.payload.ProductResponse;
 import org.ecommerce.project.service.ProductService;
