@@ -144,17 +144,17 @@ public class WebSecurityConfig {
             }
 
             // Update roles for existing users
-            userRepository.findByusername("user1").ifPresent(user -> {
+            userRepository.findByUsername("user1").ifPresent(user -> {
                 user.setRoles(userRoles);
                 userRepository.save(user);
             });
 
-            userRepository.findByusername("seller1").ifPresent(seller -> {
+            userRepository.findByUsername("seller1").ifPresent(seller -> {
                 seller.setRoles(sellerRoles);
                 userRepository.save(seller);
             });
 
-            userRepository.findByusername("admin").ifPresent(admin -> {
+            userRepository.findByUsername("admin").ifPresent(admin -> {
                 admin.setRoles(adminRoles);
                 userRepository.save(admin);
             });

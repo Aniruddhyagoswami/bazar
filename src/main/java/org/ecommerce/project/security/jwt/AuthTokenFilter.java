@@ -46,7 +46,7 @@ logger.error("Cannot set user authentication: {}",e.getMessage());
     }
 
     private String parseJwt(HttpServletRequest request) {
-        String jwt=jwtUtils.getJwtFromHeader(request);
+        String jwt=jwtUtils.getJwtCookies(request);
         logger.debug("AuthTokenFilter.java: {}",jwt);
         return jwt;
     }

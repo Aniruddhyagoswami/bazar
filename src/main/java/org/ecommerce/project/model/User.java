@@ -55,7 +55,7 @@ public class User {
     private List<Address> addresses=new ArrayList<>();
     @ToString.Exclude
     @OneToMany(mappedBy = "users",cascade = {CascadeType.PERSIST,CascadeType.MERGE},orphanRemoval = true)
-    private Set<Address> products;
+    private Set<Product> products;
 
     public User(@NotBlank @Size(min = 3, max = 20) String username, @NotBlank @Size(max = 50) @Email String email, String encode) {
 
