@@ -1,9 +1,7 @@
 package org.ecommerce.project.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 
 @Entity
@@ -11,6 +9,8 @@ import lombok.NoArgsConstructor;
 @Table(name = "cart_items")
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 public class CartItem {
 
 
