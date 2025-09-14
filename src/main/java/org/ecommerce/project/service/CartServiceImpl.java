@@ -6,29 +6,34 @@ import org.ecommerce.project.model.Cart;
 import org.ecommerce.project.model.CartItem;
 import org.ecommerce.project.model.Product;
 import org.ecommerce.project.payload.CartDTO;
+import org.ecommerce.project.payload.ProductDTO;
 import org.ecommerce.project.repository.CartItemRepository;
 import org.ecommerce.project.repository.CartRepository;
 import org.ecommerce.project.repository.ProductRepository;
+import org.ecommerce.project.util.AuthUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 public class CartServiceImpl implements CartService{
 
     @Autowired
-    AuthUtil authUtil;
+    private AuthUtil authUtil;
     @Autowired
-    CartRepository cartRepository;
+    private CartRepository cartRepository;
 
     @Autowired
-    ProductRepository productRepository;
+    private ProductRepository productRepository;
 
     @Autowired
-    CartItemRepository cartItemRepository;
+    private CartItemRepository cartItemRepository;
 
     @Autowired
-    ModelMapper modelMapper;
+    private ModelMapper modelMapper;
 
     @Override
     public CartDTO addProductToCart(Long productId, Integer quantity) {
@@ -66,20 +71,26 @@ public class CartServiceImpl implements CartService{
         cartRepository.save(cart);
 
         CartDTO cartDTO=modelMapper.map(cart, CartDTO.class);
+        List<CartItem> cartItems=cart.getCartItems();
+        Stream<ProductDTO> productDTOStream=cartItems.stream().map(item->{
+            ProductDTO map=modelMapper.map(item.getProduct(),ProductDTO.class);
+            map.setQuantity(item.getQuantity());
+            return map;
+        });
 
-
-
+        cartDTO.setProducts(productDTOStream.toList());
+        return cartDTO;
 
     }
 
     private Cart createCart(){
-        Cart userCart=cartRepository.findByEmail((authUtil.loggedInEmail());
+        Cart userCart=cartRepository.findByEmail((authUtil.loggedInEmail()));
         if (userCart!=null){
             return userCart;
         }
         Cart cart =new Cart();
         cart.setTotalPrice(0.00);
-        cart.setUser(authUtil.loggerInUser());
+        cart.setUser(authUtil.loggedInUser());
         Cart newCart=cartRepository.save(cart);
         return newCart;
     }
