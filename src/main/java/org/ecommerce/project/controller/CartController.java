@@ -1,8 +1,11 @@
 package org.ecommerce.project.controller;
 
 
+import org.ecommerce.project.model.Cart;
 import org.ecommerce.project.payload.CartDTO;
+import org.ecommerce.project.repository.CartRepository;
 import org.ecommerce.project.service.CartService;
+import org.ecommerce.project.util.AuthUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,10 +17,17 @@ import java.util.List;
 @RequestMapping("/api")
 public class CartController {
 
+
+    @Autowired
+    private CartRepository cartRepository;
+
+
     @Autowired
     private CartService cartService;
+    @Autowired
+    private AuthUtil authUtil;
 
-    @PostMapping("/cart/products/{productId}/quantity/{quantity}")
+    @PostMapping("/carts/products/{productId}/quantity/{quantity}")
     public ResponseEntity<CartDTO> addProductToCart(
             @PathVariable
             Long productId,
@@ -34,6 +44,21 @@ public class CartController {
         return new ResponseEntity<>(cartDTOs, HttpStatus.OK);
     }
 
+    @GetMapping("/carts/users/cart")
+    public ResponseEntity<CartDTO> getCartById(){
+        String emailId= authUtil.loggedInEmail();
+        Cart cart=cartRepository.findCartByEmail(emailId);
+        Long cartId=cart.getCartId();
+        CartDTO cartDTO=cartService.getCart(emailId,cartId);
+        return new ResponseEntity<CartDTO>(cartDTO,HttpStatus.OK);
+    }
+
+
+    @PutMapping("/cart/products/{productId}/quantity/{operation}")
+    public ResponseEntity<CartDTO> updateCartProduct(@PathVariable Long productId, @PathVariable String operation){
+        CartDTO cartDTO=cartService.updateProductQuantityInCart(productId,operation.equalsIgnoreCase("delete")?-1:1);
+        return new ResponseEntity<>(cartDTO,HttpStatus.OK);
+    }
 
 
 }
