@@ -140,11 +140,23 @@ public class CartServiceImpl implements CartService{
         if (cartItem==null){
             throw new APIExecption("Product"+product.getProductName()+" does not exist in cart");
         }
-        cartItem.setProductPrice(product.getSpecialPrice());
-        cartItem.setQuantity(cartItem.getQuantity()+quantity);
-        cartItem.setDiscount(product.getDiscount());
-        cart.setTotalPrice(cart.getTotalPrice()+(cartItem.getProductPrice()*quantity));
-        cartRepository.save(cart);
+        int newQuantity=cartItem.getQuantity()+quantity;
+        if (newQuantity<0){
+            throw new APIExecption("Product"+product.getProductName()+" can not have negative quantity");
+        }
+        if (newQuantity==0){
+            deleteProductFromCart(cartId,productId);
+
+        }else {
+            product.setQuantity(product.getQuantity()-quantity);
+            cartItem.setProductPrice(product.getSpecialPrice());
+            cartItem.setQuantity(cartItem.getQuantity()+quantity);
+            cartItem.setDiscount(product.getDiscount());
+            cart.setTotalPrice(cart.getTotalPrice()+(cartItem.getProductPrice()*quantity));
+            cartRepository.save(cart);
+
+        }
+
         CartItem updatedCartItem=cartItemRepository.save(cartItem);
         if (updatedCartItem.getQuantity()==0){
             cartItemRepository.deleteById(updatedCartItem.getCartItemId());
@@ -159,6 +171,20 @@ public class CartServiceImpl implements CartService{
                 });
         cartDTO.setProducts(productDTOStream.toList());
         return cartDTO;
+    }
+    @Transactional
+    @Override
+    public String deleteProductFromCart(Long cartId, Long productId) {
+        Cart cart=cartRepository.findById(cartId)
+                .orElseThrow(()-> new ResourceNotFoundException("Cart","CartId",cartId));
+        CartItem cartItem=cartItemRepository.findCartItemByProductIdAndCartId(cartId,productId);
+        if (cartItem==null){
+            throw new ResourceNotFoundException("Product","productId",productId);
+        }
+        cart.setTotalPrice(cart.getTotalPrice()- (cartItem.getProductPrice()*cartItem.getQuantity()));
+        cartItemRepository.deleteCartItemByProductIdAndCartId(cartId,productId);
+
+        return "Product "+cartItem.getProduct().getProductName()+" remove from cart";
     }
 
     private Cart createCart(){
