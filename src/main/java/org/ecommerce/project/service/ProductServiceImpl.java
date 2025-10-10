@@ -2,10 +2,13 @@ package org.ecommerce.project.service;
 
 import org.ecommerce.project.execptions.APIExecption;
 import org.ecommerce.project.execptions.ResourceNotFoundException;
+import org.ecommerce.project.model.Cart;
 import org.ecommerce.project.model.Category;
 import org.ecommerce.project.model.Product;
+import org.ecommerce.project.payload.CartDTO;
 import org.ecommerce.project.payload.ProductDTO;
 import org.ecommerce.project.payload.ProductResponse;
+import org.ecommerce.project.repository.CartRepository;
 import org.ecommerce.project.repository.CategoryRepository;
 import org.ecommerce.project.repository.ProductRepository;
 import org.modelmapper.ModelMapper;
@@ -20,11 +23,18 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl implements ProductService {
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private CartService cartService;
+
+    @Autowired
+    private CartRepository cartRepository;
 
     @Autowired
     private CategoryRepository categoryRepository;
@@ -130,24 +140,49 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDTO updateProduct(Long productId, ProductDTO productDTO) {
-        Product productFromDb=productRepository.findById(productId).orElseThrow(()->new ResourceNotFoundException("Product","productId",productId));
-        productFromDb.setProductName(productDTO.getProductName());
-        productFromDb.setDescription(productDTO.getDescription());
-        productFromDb.setPrice(productDTO.getPrice());
-        productFromDb.setDiscount(productDTO.getDiscount());
-        productFromDb.setSpecialPrice(productDTO.getSpecialPrice());
-        productFromDb.setImage(productDTO.getImage());
-        Product savedProduct=productRepository.save(productFromDb);
+        Product productFromDb = productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product", "productId", productId));
+
+        Product product = modelMapper.map(productDTO, Product.class);
+
+        productFromDb.setProductName(product.getProductName());
+        productFromDb.setDescription(product.getDescription());
+        productFromDb.setQuantity(product.getQuantity());
+        productFromDb.setDiscount(product.getDiscount());
+        productFromDb.setPrice(product.getPrice());
+        productFromDb.setSpecialPrice(product.getSpecialPrice());
+
+        Product savedProduct = productRepository.save(productFromDb);
+
+        List<Cart> carts = cartRepository.findCartsByProductId(productId);
+
+        List<CartDTO> cartDTOs = carts.stream().map(cart -> {
+            CartDTO cartDTO = modelMapper.map(cart, CartDTO.class);
+
+            List<ProductDTO> products = cart.getCartItems().stream()
+                    .map(p -> modelMapper.map(p.getProduct(), ProductDTO.class)).collect(Collectors.toList());
+
+            cartDTO.setProducts(products);
+
+            return cartDTO;
+
+        }).collect(Collectors.toList());
+
+        cartDTOs.forEach(cart -> cartService.updateProductInCarts(cart.getCartId(), productId));
+
         return modelMapper.map(savedProduct, ProductDTO.class);
-
-
     }
-
     @Override
-    public ProductDTO deleteProduct(long productId) {
-        Product product=productRepository.findById(productId).orElseThrow(()->new ResourceNotFoundException("Product","productId",productId));
+    public ProductDTO deleteProduct(Long productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product", "productId", productId));
+
+        // DELETE
+        List<Cart> carts = cartRepository.findCartsByProductId(productId);
+        carts.forEach(cart -> cartService.deleteProductFromCart(cart.getCartId(), productId));
+
         productRepository.delete(product);
-        return modelMapper.map(product,ProductDTO.class);
+        return modelMapper.map(product, ProductDTO.class);
     }
 
     @Override
