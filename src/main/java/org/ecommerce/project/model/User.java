@@ -47,11 +47,11 @@ public class User {
 
     @Getter
     @Setter
-    @ManyToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE})
-    @JoinTable(name = "user_addresses",
-    joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "address_id")
-    )
+    @OneToMany(mappedBy = "user",cascade = {CascadeType.PERSIST,CascadeType.MERGE},orphanRemoval = true)
+//    @JoinTable(name = "user_addresses",
+//    joinColumns = @JoinColumn(name = "user_id"),
+//            inverseJoinColumns = @JoinColumn(name = "address_id")
+//    )
     private List<Address> addresses=new ArrayList<>();
     @ToString.Exclude
     @OneToMany(mappedBy = "users",cascade = {CascadeType.PERSIST,CascadeType.MERGE},orphanRemoval = true)

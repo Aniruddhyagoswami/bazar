@@ -32,6 +32,10 @@ public class Address {
 
 
     @NotBlank
+    @Size(min = 2, message = "Country name must be atleast 2 characters")
+    private String country;
+
+    @NotBlank
     @Size(min = 5, message = "City name must contain atleast 5 characters")
     private String city;
 
@@ -40,13 +44,14 @@ public class Address {
     private String state;
 
     @NotBlank
-    @Size(min = 6, message = "pincode contain atleast 6 characters")
+    @Size(min = 5, message = "pincode contain atleast 6 characters")
     private String pincode;
 
 
 
-    @ToString.Exclude
-    @ManyToMany(mappedBy = "addresses")
-    private List<User> users=new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
 }

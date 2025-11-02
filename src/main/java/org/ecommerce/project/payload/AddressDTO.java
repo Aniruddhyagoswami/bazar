@@ -15,4 +15,7 @@ public class AddressDTO {
    private String state;
     private String pincode;
 
+
+    private String country;
+
 }
