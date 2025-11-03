@@ -1,6 +1,7 @@
 package org.ecommerce.project.config;
 
 import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.ExternalDocumentation;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
@@ -35,12 +36,16 @@ public class SwaggerConfig {
                                 """) .version("1.0.0")
                         .contact(new Contact()
                                 .name("Ecommerce Project API Support")
-                                .email("support@ecommerce.com")
+                                .email("aniruddhyagoswami6@gmail.com")
                                 .url("""
-                                        https://github.com/yourusername/ecommerce"""))
+                                       https://github.com/Aniruddhyagoswami/bazar"""))
                         .license(new License()
                                 .name("Apache 2.0")
-                                .url("https://www.apache.org/licenses/LICENSE-2.0.html")))
+                                .url("https://www.apache.org/licenses/LICENSE-2.0.html"))
+
+                ).externalDocs(new ExternalDocumentation()
+                .description("Full Documentation, Setup Guide, and Examples on GitHub")
+                .url("https://github.com/Aniruddhyagoswami/bazar"))
                 .components(new Components()
                         .addSecuritySchemes("Bearer Authentication",bearerScheme)).addSecurityItem(bearerRequirement);
     }
