@@ -1,5 +1,9 @@
 package org.ecommerce.project.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.ecommerce.project.model.AppRole;
 import org.ecommerce.project.model.Role;
@@ -47,7 +51,16 @@ public class AuthController {
 
     @Autowired
     RoleRepository roleRepository;
-
+    @Tag(name = "Authentication APIs", description = "APIs for managing authentications")
+    @Operation(
+            summary = "Authenticate user (Sign in)",
+            description = "Authenticates a user using their username and password, generates a JWT token, and returns user info along with roles."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User authenticated successfully and JWT cookie generated"),
+            @ApiResponse(responseCode = "404", description = "Invalid credentials"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
         Authentication authentication;
@@ -73,7 +86,16 @@ public class AuthController {
                 roles);
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString()).body(userInfoResponse);
     }
-
+    @Tag(name = "Authentication APIs", description = "APIs for managing authentications")
+    @Operation(
+            summary = "Register a new user (Sign up)",
+            description = "Registers a new user with username, email, and password. Supports role assignment such as USER, ADMIN, or SELLER."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User registered successfully"),
+            @ApiResponse(responseCode = "400", description = "Username or email already exists"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signupRequest){
         if(userRepository.existsByUsername(signupRequest.getUsername())){
@@ -117,7 +139,15 @@ public class AuthController {
         userRepository.save(user);
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }
-
+    @Tag(name = "Authentication APIs", description = "APIs for managing authentications")
+    @Operation(
+            summary = "Get current username",
+            description = "Returns the username of the currently authenticated user."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Username fetched successfully"),
+            @ApiResponse(responseCode = "401", description = "User not authenticated")
+    })
     @GetMapping("/username")
     public String currentUserName(Authentication authentication){
         if (authentication != null){
@@ -126,7 +156,16 @@ public class AuthController {
             return "";
         }
     }
-
+    @Tag(name = "Authentication APIs", description = "APIs for managing authentications")
+    @Operation(
+            summary = "Get current user details",
+            description = "Fetches authenticated user's details (ID, username, roles) using the JWT token."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User details fetched successfully"),
+            @ApiResponse(responseCode = "401", description = "Invalid or expired token"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @GetMapping("/user")
     public ResponseEntity<?> getUserDetails(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
@@ -148,7 +187,16 @@ public class AuthController {
         return ResponseEntity.ok().body(userInfoResponse);
     }
 
-
+    @Tag(name = "Authentication APIs", description = "APIs for managing authentications")
+    @Operation(
+            summary = "Sign out user",
+            description = "Clears the JWT authentication cookie to log out the current user."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User signed out successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid or missing token"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @PostMapping("/signout")
     public ResponseEntity<?> signout(Authentication authentication){
         if (authentication != null){

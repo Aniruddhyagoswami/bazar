@@ -43,10 +43,18 @@ public class JwtUtils {
 //        }
 //        return null;
 //    }
-    public String getJwtCookies(HttpServletRequest request){
-        Cookie cookie= WebUtils.getCookie(request,jwtCookie);
-        if (cookie!=null){
-            return cookie.getValue();
+public String getJwtCookies(HttpServletRequest request){
+    Cookie cookie= WebUtils.getCookie(request,jwtCookie);
+    if (cookie!=null){
+        return cookie.getValue();
+    }
+    return null;
+}
+
+    public String getJwtFromHeader(HttpServletRequest request){
+        String header=request.getHeader("Authorization");
+        if (header != null && header.startsWith("Bearer ")){
+            return header.substring(7);
         }
         return null;
     }
