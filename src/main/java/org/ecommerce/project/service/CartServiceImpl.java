@@ -1,7 +1,7 @@
 package org.ecommerce.project.service;
 
-import org.ecommerce.project.execptions.APIExecption;
-import org.ecommerce.project.execptions.ResourceNotFoundException;
+import org.ecommerce.project.exceptions.APIException;
+import org.ecommerce.project.exceptions.ResourceNotFoundException;
 import org.ecommerce.project.model.Cart;
 import org.ecommerce.project.model.CartItem;
 import org.ecommerce.project.model.Product;
@@ -47,15 +47,15 @@ public class CartServiceImpl implements CartService{
                 productId
         );
         if (cartItem!=null){
-            throw new APIExecption("Product"+product.getProductName()+" already exists in cart");
+            throw new APIException("Product"+product.getProductName()+" already exists in cart");
         }
 
         if (product.getQuantity()==0){
-            throw new APIExecption("Product"+product.getProductName()+" is out of stock");
+            throw new APIException("Product"+product.getProductName()+" is out of stock");
         }
 
         if (product.getQuantity()<quantity){
-            throw new APIExecption("Product "+product.getProductName()+" only has "+product.getQuantity()+" in stock");
+            throw new APIException("Product "+product.getProductName()+" only has "+product.getQuantity()+" in stock");
         }
 
 
@@ -89,7 +89,7 @@ public class CartServiceImpl implements CartService{
     public List<CartDTO> getAllCarts() {
         List<Cart> carts=cartRepository.findAll();
         if(carts.size()==0){
-            throw new APIExecption("No carts exist");
+            throw new APIException("No carts exist");
         }
 
         List<CartDTO> cartDTOS=carts.stream().map(cart->{
@@ -129,20 +129,20 @@ public class CartServiceImpl implements CartService{
         Product product=productRepository.findById(productId)
                 .orElseThrow(()-> new ResourceNotFoundException("Product","productId",productId));
         if (product.getQuantity()==0){
-            throw new APIExecption("Product"+product.getProductName()+" is out of stock");
+            throw new APIException("Product"+product.getProductName()+" is out of stock");
         }
         if (product.getQuantity()<quantity){
-            throw new APIExecption("Product "+product.getProductName()+" only has "+product.getQuantity()+" in stock");
+            throw new APIException("Product "+product.getProductName()+" only has "+product.getQuantity()+" in stock");
 
         }
 
         CartItem cartItem=cartItemRepository.findCartItemByProductIdAndCartId(cartId,productId);
         if (cartItem==null){
-            throw new APIExecption("Product"+product.getProductName()+" does not exist in cart");
+            throw new APIException("Product"+product.getProductName()+" does not exist in cart");
         }
         int newQuantity=cartItem.getQuantity()+quantity;
         if (newQuantity<0){
-            throw new APIExecption("Product"+product.getProductName()+" can not have negative quantity");
+            throw new APIException("Product"+product.getProductName()+" can not have negative quantity");
         }
         if (newQuantity==0){
             deleteProductFromCart(cartId,productId);
@@ -211,7 +211,7 @@ public class CartServiceImpl implements CartService{
         CartItem cartItem = cartItemRepository.findCartItemByProductIdAndCartId(cartId, productId);
 
         if (cartItem == null) {
-            throw new APIExecption("Product " + product.getProductName() + " not available in the cart!!!");
+            throw new APIException("Product " + product.getProductName() + " not available in the cart!!!");
         }
 
         double cartPrice = cart.getTotalPrice()
