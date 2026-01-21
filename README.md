@@ -42,6 +42,16 @@ Bazar is engineered to handle the core requirements of a high-traffic e-commerce
 
 ---
 
+## 📚 Documentation
+
+Detailed documentation is available in the `docs/` folder:
+
+*   [**Architecture Overview**](docs/ARCHITECTURE.md): Explains the system design and layers.
+*   [**Database Schema**](docs/DATABASE_SCHEMA.md): Entity-Relationship diagrams and table descriptions.
+*   [**API Guide**](docs/API_GUIDE.md): Examples and usage instructions for key API endpoints.
+
+---
+
 ## 🏗️ Technical Architecture
 
 The project follows a **Clean Layered Architecture** to ensure maintainability and testability.

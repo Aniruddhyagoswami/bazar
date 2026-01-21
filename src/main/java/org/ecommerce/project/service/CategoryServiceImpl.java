@@ -1,8 +1,8 @@
 package org.ecommerce.project.service;
 
 import jakarta.validation.Valid;
-import org.ecommerce.project.execptions.APIExecption;
-import org.ecommerce.project.execptions.ResourceNotFoundException;
+import org.ecommerce.project.exceptions.APIException;
+import org.ecommerce.project.exceptions.ResourceNotFoundException;
 import org.ecommerce.project.model.Category;
 import org.ecommerce.project.payload.CategoryDTO;
 import org.ecommerce.project.payload.CategoryResponse;
@@ -51,7 +51,7 @@ public class CategoryServiceImpl implements CategoryService{
         Page<Category> categoriesPage=categoryRepository.findAll(pageDetails);
         List<Category> categories=categoriesPage.getContent();
         if (categories.isEmpty()){
-            throw new APIExecption("No categories created yet");
+            throw new APIException("No categories created yet");
         }
         List<CategoryDTO> categoryDTOS=categories.stream().map(category->modelMapper.map(category,CategoryDTO.class)).toList();
         CategoryResponse categoriesResponse=new CategoryResponse();
@@ -70,7 +70,7 @@ public class CategoryServiceImpl implements CategoryService{
         Category category=modelMapper.map(categoryDTO,Category.class);
         Category categoryFromDB=categoryRepository.findByCategoryName(category.getCategoryName());
         if (categoryFromDB!=null){
-            throw new APIExecption("Category with the name: "+category.getCategoryName()+"already exists");
+            throw new APIException("Category with the name: "+category.getCategoryName()+"already exists");
         }
         Category savedCategory= categoryRepository.save(category);
         return modelMapper.map(savedCategory, CategoryDTO.class);
