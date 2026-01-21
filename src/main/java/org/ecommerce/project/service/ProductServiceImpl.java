@@ -1,7 +1,7 @@
 package org.ecommerce.project.service;
 
-import org.ecommerce.project.execptions.APIExecption;
-import org.ecommerce.project.execptions.ResourceNotFoundException;
+import org.ecommerce.project.exceptions.APIException;
+import org.ecommerce.project.exceptions.ResourceNotFoundException;
 import org.ecommerce.project.model.Cart;
 import org.ecommerce.project.model.Category;
 import org.ecommerce.project.model.Product;
@@ -70,7 +70,7 @@ public class ProductServiceImpl implements ProductService {
             Product savedProduct = productRepository.save(product);
             return modelMapper.map(savedProduct, ProductDTO.class);
         }else {
-            throw  new APIExecption("Product already exists");
+            throw  new APIException("Product already exists");
         }
     }
 

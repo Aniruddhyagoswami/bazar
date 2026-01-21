@@ -1,8 +1,8 @@
 package org.ecommerce.project.service;
 
 
-import org.ecommerce.project.execptions.APIExecption;
-import org.ecommerce.project.execptions.ResourceNotFoundException;
+import org.ecommerce.project.exceptions.APIException;
+import org.ecommerce.project.exceptions.ResourceNotFoundException;
 import org.ecommerce.project.model.*;
 import org.ecommerce.project.payload.OrderDTO;
 import org.ecommerce.project.payload.OrderItemDTO;
@@ -71,7 +71,7 @@ public class OrderServiceImpl implements OrderService {
 
         List<CartItem> cartItems = cart.getCartItems();
         if (cartItems.isEmpty()) {
-            throw new APIExecption("Cart is empty");
+            throw new APIException("Cart is empty");
         }
 
         List<OrderItem> orderItems = new ArrayList<>();
