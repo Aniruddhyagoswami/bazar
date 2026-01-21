@@ -1,7 +1,7 @@
 package org.ecommerce.project.service;
 
 
-import org.ecommerce.project.execptions.ResourceNotFoundException;
+import org.ecommerce.project.exceptions.ResourceNotFoundException;
 import org.ecommerce.project.model.Address;
 import org.ecommerce.project.model.User;
 import org.ecommerce.project.payload.AddressDTO;

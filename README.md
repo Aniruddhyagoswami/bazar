@@ -1,4 +1,3 @@
-
 # 🛒 Bazar – Advanced E-Commerce Backend
 
 **Bazar** is a robust, production-ready **E-Commerce backend** built with the **Spring Boot ecosystem**.  
@@ -90,21 +89,31 @@ The project follows a **Clean Layered Architecture** to ensure maintainability a
 
 ```bash
 git clone https://github.com/Aniruddhyagoswami/bazar.git
-cd bazar/ecommerce
+cd bazar
 ```
 
 ---
 
 ### 2️⃣ Database Setup
 
-Create a database named `bazar_db` in MySQL and update:
+Create a database named `ecommerce` in MySQL. You can use a different name, but make sure to update `application.properties` accordingly.
+
+For the default configuration, ensure your MySQL server has the database created:
+
+```sql
+CREATE DATABASE ecommerce;
+```
+
+Check `src/main/resources/application.properties` to configure your database credentials:
 
 ```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/bazar_db
-spring.datasource.username=your_username
+spring.datasource.url=jdbc:mysql://localhost:3306/ecommerce
+spring.datasource.username=root
 spring.datasource.password=your_password
 spring.jpa.hibernate.ddl-auto=update
 ```
+
+> **Note:** Replace `your_password` with your actual MySQL root password.
 
 ---
 
@@ -149,7 +158,9 @@ src/main/java/org/ecommerce/project/
 ├── payload/            # DTOs and API Response wrappers
 ├── repository/         # Spring Data JPA Repositories
 ├── security/           # JWT implementation & Security filters
-└── service/            # Business logic interfaces & implementations
+├── service/            # Business logic interfaces & implementations
+├── util/               # Utility classes (e.g., AuthUtil)
+└── EcommerceApplication.java # Main Application Class
 ```
 
 ---
